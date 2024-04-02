@@ -20,7 +20,10 @@ while True:
     print(f"Connexion établie avec le client {client_address}")
 
     while True:
-        stockage = lire_fichier_json("DONNEES_SERVEUR.json")
+        fichier = HOST.replace('.','-')+'-'+str(PORT)+'.json'
+        print(type(fichier))
+        print(fichier)
+        stockage = lire_fichier_json(fichier)
         try:
             # Réception des données du client
             data = client_socket.recv(4096)  # Taille du buffer à adapter en fonction de vos besoins
@@ -80,7 +83,7 @@ while True:
             else:
                 print("Opération non supportée:", operation)
 
-            ecraser_fichier_json("DONNEES_SERVEUR.json", stockage)
+            ecraser_fichier_json(HOST.replace('.','-')+'-'+str(PORT)+'.json', stockage)
 
             # Envoyer la réponse au client
             json_data = json.dumps(reponse)
