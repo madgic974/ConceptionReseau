@@ -4,6 +4,13 @@ import json
 from gestionjson import *
 import os 
 
+def is_valid_json(my_json):
+    try:
+        json_object = json.loads(my_json)
+    except ValueError as e:
+        return False
+    return True
+
 HOST = sys.argv[1]
 PORT = int(sys.argv[2])
 
@@ -21,7 +28,6 @@ while True:
 
     while True:
         fichier = HOST.replace('.','-')+'-'+str(PORT)+'.json'
-        print(type(fichier))
         print(fichier)
         stockage = lire_fichier_json(fichier)
         try:
@@ -37,6 +43,7 @@ while True:
 
             # Traitement de la requête en fonction de la valeur du champ "operation"
             operation = json_data.get("operation")
+            
             if operation == "GET":
                 key = json_data.get("rsrcId")
                 value = stockage.get(key)
@@ -51,20 +58,23 @@ while True:
                     reponse = {
                         "server": HOST,
                         "code": "404",
-                        "message": f"La ressource avec l'identifiant '{key}' n'a pas été trouvée."
+                        "message": f"La ressource avec l'identifiant '{key}' est inconnu."
                     }
 
             elif operation == "POST":
-                if 'data' in json_data and 'identifiant' in json_data['data'] and 'donnees' in json_data['data']:
-                    key = json_data['data']['identifiant']
-                    value = json_data['data']['donnees']
+                data = json_data.get("data")
+                id = json_data.get("rsrcId")
+                if (is_valid_json(data) and (id !="")) :
+                    key = id
+                    print(key)
+                    value = data
                     if key not in stockage:
                         stockage[key] = value
                         reponse = {
                             "server": HOST,
                             "code": "201",
                             "rsrcId": key,
-                            "message": "Ressource créée"
+                            "message": "Ressource creee"
                         }
                     else:
                         stockage[key] = value

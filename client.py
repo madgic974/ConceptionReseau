@@ -18,12 +18,14 @@ def ChoixAction():
     print("Saisir 2 pour ajouter une valeur :")
     return(input("Saisie : "))
 
-def GestionRequetteLecture():
+def GestionRequetteLecture(requette):
 
-    entry = input("Saisie de la requette")
+    if(requette=="") :
+        requette = input("Saisie de la requette")
 
     # Utilisation d'une expression régulière pour extraire les parties de l'entrée
-    match = re.match(r"(\w+)://(\d+\.\d+\.\d+\.\d+):(\d+)/(\w+)", entry)
+    match = re.match(r"(\w+)://(\d+\.\d+\.\d+\.\d+):(\d+)/(\w+)", requette)
+
 
     if match:
         # Extraction des parties de l'entrée
@@ -42,12 +44,14 @@ def GestionRequetteLecture():
     else:
         print("L'entrée n'est pas au format attendu.")
 
-def GestionRequetteEcriture():
-    # Entrée
-    entry = input("Saisie de la requette")
+def GestionRequetteEcriture(requette, donnee):
+
+    if(requette=="") : 
+        # Entrée
+        requette = input("Saisie de la requette")
 
     # Utilisation d'une expression régulière pour extraire les parties de l'entrée
-    match = re.match(r"(\w+)://(\d+\.\d+\.\d+\.\d+):(\d+)/(\w+)", entry)
+    match = re.match(r"(\w+)://(\d+\.\d+\.\d+\.\d+):(\d+)/(\w+)", requette)
 
     if match:
         # Extraction des parties de l'entrée
@@ -56,16 +60,16 @@ def GestionRequetteEcriture():
         port = int(match.group(3))
         rsrc_id = match.group(4)
         
-        donnees = input("Donner le json a stocker : ")
+        if (donnee=="") : 
+            donnee = input("Donner le json a stocker : ")
+
 
         # Création du JSON
         data = {
             "protocol": protocol,
             "operation": "POST",
-            "data" : { 
-                "identifiant" : rsrc_id,
-                "donnees" : donnees 
-            }
+            "rsrcId": rsrc_id,
+            "data" : donnee
         }
         return [data, ip_address, port]
     else:
@@ -86,12 +90,52 @@ def EnvoieJson(s, data):
         response = s.recv(4096)  # Taille du buffer à adapter en fonction de vos besoins
         print("Réponse du serveur:", response.decode())
 
+        return response.decode()
+
+
+def lecture(requette):
+    [data, ip_address, port] = GestionRequetteLecture(requette)
+
+    #Création du socket 
+    s = CreationSocket()
+
+    # Connexion au serveur
+    s.connect((ip_address, port))
+
+    print(f"Connecté au serveur")
+
+    message = EnvoieJson(s, data)
+
+    # Fermeture de la connexion
+    s.close()
+
+    return message
+
+def ecriture(requette, donnee) :
+
+    [data, ip_address, port] = GestionRequetteEcriture(requette, donnee)
+
+    #Création du socket 
+    s = CreationSocket()
+
+    # Connexion au serveur
+    s.connect((ip_address, port))
+    print(f"Connecté au serveur")
+
+    message =EnvoieJson(s, data)
+
+    # Fermeture de la connexion
+    s.close()
+
+    return message 
+
 
 
 #----------------------------------------------------------------------------------
 #                         Début du programme Client 
 #----------------------------------------------------------------------------------
 
+'''
 while True:
 
     choix = ChoixAction()
@@ -131,4 +175,6 @@ while True:
 
     else :
         print("Erreur de saisie")
+
+'''
  
