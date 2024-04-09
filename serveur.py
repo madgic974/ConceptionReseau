@@ -108,7 +108,6 @@ def handle_client(client_socket, client_address, lock):
                     value = data
                     print("valeur ", value)
                     with lock:
-                        print("Bloque")
                         if key not in stockage:
                             stockage[key] = value
                             reponse = {
@@ -125,7 +124,6 @@ def handle_client(client_socket, client_address, lock):
                                 "rsrcId": key,
                                 "message": "Ressource modifiée"
                             }
-                        print("Libre")
                 else:
                     reponse = {
                         "server": HOST,
