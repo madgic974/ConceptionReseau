@@ -21,7 +21,7 @@ def ChoixAction():
 def GestionRequetteLecture(requette):
 
     if(requette=="") :
-        requette = input("Saisie de la requette")
+        requette = input("Saisie de la requette : ")
 
     # Utilisation d'une expression régulière pour extraire les parties de l'entrée
     match = re.match(r"(\w+)://(\d+\.\d+\.\d+\.\d+):(\d+)/(\w+)", requette)
@@ -40,6 +40,9 @@ def GestionRequetteLecture(requette):
             "operation": "GET",
             "rsrcId": rsrc_id
         }
+
+        print("Json envoyé au serveur : ", data)
+
         return [data, ip_address, port]
     else:
         print("L'entrée n'est pas au format attendu.")
@@ -88,12 +91,13 @@ def EnvoieJson(s, data):
 
         # Attente de la réponse du serveur
         response = s.recv(4096)  # Taille du buffer à adapter en fonction de vos besoins
-        print("Réponse du serveur:", response.decode())
+        print("Réponse du serveur: ", response.decode())
 
         return response.decode()
 
 
 def lecture(requette):
+    
     [data, ip_address, port] = GestionRequetteLecture(requette)
 
     #Création du socket 
@@ -135,14 +139,14 @@ def ecriture(requette, donnee) :
 #                         Début du programme Client 
 #----------------------------------------------------------------------------------
 
-'''
+
 while True:
 
     choix = ChoixAction()
 
     if (choix=='1') : 
         
-        [data, ip_address, port] = GestionRequetteLecture()
+        [data, ip_address, port] = GestionRequetteLecture("")
 
         #Création du socket 
         s = CreationSocket()
@@ -159,7 +163,7 @@ while True:
 
     elif (choix=='2'):
 
-        [data, ip_address, port] = GestionRequetteEcriture()
+        [data, ip_address, port] = GestionRequetteEcriture("")
 
         #Création du socket 
         s = CreationSocket()
@@ -176,5 +180,5 @@ while True:
     else :
         print("Erreur de saisie")
 
-'''
+
  
