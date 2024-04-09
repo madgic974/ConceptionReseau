@@ -14,9 +14,6 @@ def is_valid_json(my_json):
 
 def handle_client(client_socket, client_address, lock):
     while True:
-        fichier = HOST.replace('.', '-') + '-' + str(PORT) + '.json'
-        print(fichier)
-        stockage = lire_fichier_json(fichier)
         try:
             data = client_socket.recv(4096)
 
@@ -55,22 +52,23 @@ def handle_client(client_socket, client_address, lock):
                     print(key)
                     value = data
                     print("valeur ", value)
-                    if key not in stockage:
-                        stockage[key] = value
-                        reponse = {
-                            "server": HOST,
-                            "code": "201",
-                            "rsrcId": key,
-                            "message": "Ressource creee"
-                        }
-                    else:
-                        stockage[key] = value
-                        reponse = {
-                            "server": HOST,
-                            "code": "211",
-                            "rsrcId": key,
-                            "message": "Ressource modifiée"
-                        }
+                    with lock:
+                        if key not in stockage:
+                            stockage[key] = value
+                            reponse = {
+                                "server": HOST,
+                                "code": "201",
+                                "rsrcId": key,
+                                "message": "Ressource creee"
+                            }
+                        else:
+                            stockage[key] = value
+                            reponse = {
+                                "server": HOST,
+                                "code": "211",
+                                "rsrcId": key,
+                                "message": "Ressource modifiée"
+                            }
                 else:
                     reponse = {
                         "server": HOST,
@@ -106,6 +104,8 @@ lock = threading.Lock()
 print(f"En attente de connexion sur le port {PORT}...")
 
 while True:
+    fichier = HOST.replace('.', '-') + '-' + str(PORT) + '.json'
+    stockage = lire_fichier_json(fichier)
     client_socket, client_address = server_socket.accept()
     print(f"Connexion établie avec le client {client_address}")
 
