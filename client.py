@@ -41,9 +41,9 @@ def GestionRequetteLecture(requette):
             "rsrcId": rsrc_id
         }
 
-        print("Json envoyé au serveur : ", data)
+        print("Json a envoyer au serveur : ", data)
 
-        return [data, ip_address, port]
+        return [data, ip_address, port, protocol]
     else:
         print("L'entrée n'est pas au format attendu.")
 
@@ -97,7 +97,7 @@ def EnvoieJson(s, data):
 
 
 def lecture(requette):
-    
+
     [data, ip_address, port] = GestionRequetteLecture(requette)
 
     #Création du socket 
@@ -146,7 +146,7 @@ while True:
 
     if (choix=='1') : 
         
-        [data, ip_address, port] = GestionRequetteLecture("")
+        [data, ip_address, port, protocol] = GestionRequetteLecture("")
 
         #Création du socket 
         s = CreationSocket()
@@ -156,10 +156,19 @@ while True:
 
         print(f"Connecté au serveur")
 
-        EnvoieJson(s, data)
+        reponse1 = EnvoieJson(s, data)
 
-        # Fermeture de la connexion
-        s.close()
+        if (protocol == "wrdo"):
+
+            while(1):
+                
+                # Attente de la réponse du serveur
+                response = s.recv(4096) 
+                print(reponse) 
+        
+        else : 
+            # Fermeture de la connexion
+            s.close()
 
     elif (choix=='2'):
 
