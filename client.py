@@ -163,7 +163,7 @@ while True:
 
     elif (choix=='2'):
 
-        [data, ip_address, port] = GestionRequetteEcriture("")
+        [data, ip_address, port] = GestionRequetteEcriture("","")
 
         #Création du socket 
         s = CreationSocket()
