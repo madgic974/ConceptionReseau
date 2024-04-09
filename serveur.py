@@ -62,7 +62,7 @@ def handle_client(client_socket, client_address, lock):
                             # Si la ressource a été modifiée, envoyer la nouvelle valeur au client
                             reponse = {
                                 "server": HOST,
-                                "code": "200",
+                                "code": "210",
                                 "rsrcId": key,
                                 "data": new_value
                             }
