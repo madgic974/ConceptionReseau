@@ -48,7 +48,6 @@ def GestionRequetteLecture(requette):
         print("L'entrée n'est pas au format attendu.")
 
 def GestionRequetteEcriture(requette, donnee):
-
     if(requette=="") : 
         # Entrée
         requette = input("Saisie de la requette")
@@ -98,22 +97,27 @@ def EnvoieJson(s, data):
 
 def lecture(requette):
 
-    [data, ip_address, port, protocol] = GestionRequetteLecture(requette)
+    try : 
+        [data, ip_address, port, protocol] = GestionRequetteLecture(requette)
 
-    #Création du socket 
-    s = CreationSocket()
+        #Création du socket 
+        s = CreationSocket()
 
-    # Connexion au serveur
-    s.connect((ip_address, port))
+        # Connexion au serveur
+        s.connect((ip_address, port))
 
-    print(f"Connecté au serveur")
+        print(f"Connecté au serveur")
 
-    message = EnvoieJson(s, data)
+        message = EnvoieJson(s, data)
 
-    # Fermeture de la connexion
-    s.close()
+        # Fermeture de la connexion
+        s.close()
 
-    return message
+        return message
+        
+    except Exception as e:
+        print("Une erreur est survenue:", e)
+        return None
 
 def ecriture(requette, donnee) :
 

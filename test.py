@@ -16,7 +16,8 @@ def extract_strings_with_dollar(data):
             matches = re.findall(r'\$[^\s"]+', obj)
             if matches:
                 print(matches)
-                lecture(matches[0].replace('$', ''))
+                message = lecture(matches[0].replace('$', ''))
+
     recurse_extract(data)
 
 
@@ -33,7 +34,8 @@ data = {
                 "code": "6gin101-11",
                 "time": "soir"
             },
-            "$wrdo://192.168.56.1:8080/6gen723-03"
+            "$wrdo://192.168.56.1:8080/6gen723-03",
+            "$exmaple"
         ]
     }
 }
