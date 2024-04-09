@@ -4,6 +4,7 @@ import json
 from gestionjson import *
 import os
 import threading
+import time
 
 def is_valid_json(my_json):
     try:
@@ -57,7 +58,6 @@ def handle_client(client_socket, client_address, lock):
                     while True:
                         # Attente d'une éventuelle modification de la ressource
                         new_value = stockage.get(key)
-
                         if new_value != value:
                             # Si la ressource a été modifiée, envoyer la nouvelle valeur au client
                             reponse = {
@@ -108,6 +108,7 @@ def handle_client(client_socket, client_address, lock):
                     value = data
                     print("valeur ", value)
                     with lock:
+                        print("Bloque")
                         if key not in stockage:
                             stockage[key] = value
                             reponse = {
@@ -124,6 +125,7 @@ def handle_client(client_socket, client_address, lock):
                                 "rsrcId": key,
                                 "message": "Ressource modifiée"
                             }
+                        print("Libre")
                 else:
                     reponse = {
                         "server": HOST,
@@ -157,10 +159,9 @@ server_socket.listen(5)
 lock = threading.Lock()
 
 print(f"En attente de connexion sur le port {PORT}...")
-
+fichier = HOST.replace('.', '-') + '-' + str(PORT) + '.json'
+stockage = lire_fichier_json(fichier)
 while True:
-    fichier = HOST.replace('.', '-') + '-' + str(PORT) + '.json'
-    stockage = lire_fichier_json(fichier)
     client_socket, client_address = server_socket.accept()
     print(f"Connexion établie avec le client {client_address}")
 

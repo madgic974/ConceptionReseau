@@ -164,7 +164,7 @@ while True:
                 
                 # Attente de la réponse du serveur
                 response = s.recv(4096) 
-                print(reponse) 
+                print(response) 
         
         else : 
             # Fermeture de la connexion
