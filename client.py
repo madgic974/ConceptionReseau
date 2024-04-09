@@ -98,7 +98,7 @@ def EnvoieJson(s, data):
 
 def lecture(requette):
 
-    [data, ip_address, port] = GestionRequetteLecture(requette)
+    [data, ip_address, port, protocol] = GestionRequetteLecture(requette)
 
     #Création du socket 
     s = CreationSocket()
@@ -139,7 +139,7 @@ def ecriture(requette, donnee) :
 #                         Début du programme Client 
 #----------------------------------------------------------------------------------
 
-
+'''
 while True:
 
     choix = ChoixAction()
@@ -164,7 +164,7 @@ while True:
                 
                 # Attente de la réponse du serveur
                 response = s.recv(4096) 
-                print(reponse) 
+                print(response) 
         
         else : 
             # Fermeture de la connexion
@@ -189,5 +189,5 @@ while True:
     else :
         print("Erreur de saisie")
 
-
+'''
  
