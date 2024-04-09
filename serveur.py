@@ -3,6 +3,7 @@ import sys
 import json
 from gestionjson import *
 import os
+import threading
 
 def is_valid_json(my_json):
     try:
@@ -11,35 +12,20 @@ def is_valid_json(my_json):
         return False
     return True
 
-HOST = sys.argv[1]
-PORT = int(sys.argv[2])
-
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((HOST, PORT))
-server_socket.listen(1)  # Permet une seule connexion à la fois
-
-print(f"En attente de connexion sur le port {PORT}...")
-
-while True:
-    client_socket, client_address = server_socket.accept()
-    print(f"Connexion établie avec le client {client_address}")
-
+def handle_client(client_socket, client_address, lock):
     while True:
         fichier = HOST.replace('.', '-') + '-' + str(PORT) + '.json'
         print(fichier)
         stockage = lire_fichier_json(fichier)
         try:
-            # Réception des données du client
-            data = client_socket.recv(4096)  # Taille du buffer à adapter en fonction de vos besoins
+            data = client_socket.recv(4096)
 
             if not data:
                 break
 
-            # Décodage des données JSON reçues
             json_data = json.loads(data.decode())
             print("JSON reçu du client:", json_data)
 
-            # Traitement de la requête en fonction de la valeur du champ "operation"
             operation = json_data.get("operation")
 
             if operation == "GET":
@@ -96,22 +82,34 @@ while True:
 
             ecraser_fichier_json(HOST.replace('.', '-') + '-' + str(PORT) + '.json', stockage)
 
-            # Envoyer la réponse au client
             json_data = json.dumps(reponse)
-
             donnees = json_data.replace("\\" , "")
             client_socket.sendall(donnees.encode())
 
         except json.JSONDecodeError as e:
             print("Erreur lors du décodage du JSON:", e)
             response = "Erreur lors du décodage du JSON."
-
-            # Envoyer une réponse d'erreur au client
             client_socket.sendall(response.encode())
-            break  # Sortir de la boucle pour fermer la connexion avec le client
+            break
 
-    # Fermeture de la connexion avec le client
     client_socket.close()
     print(f"Connexion avec le client {client_address} fermée")
+
+HOST = sys.argv[1]
+PORT = int(sys.argv[2])
+
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT))
+server_socket.listen(5)
+lock = threading.Lock()
+
+print(f"En attente de connexion sur le port {PORT}...")
+
+while True:
+    client_socket, client_address = server_socket.accept()
+    print(f"Connexion établie avec le client {client_address}")
+
+    client_handler = threading.Thread(target=handle_client, args=(client_socket, client_address, lock))
+    client_handler.start()
 
 server_socket.close()
