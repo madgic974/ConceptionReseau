@@ -2,7 +2,7 @@ import socket
 import sys
 import json
 from gestionjson import *
-import os 
+import os
 
 def is_valid_json(my_json):
     try:
@@ -18,8 +18,6 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((HOST, PORT))
 server_socket.listen(1)  # Permet une seule connexion à la fois
 
-stockage = {}
-
 print(f"En attente de connexion sur le port {PORT}...")
 
 while True:
@@ -27,7 +25,7 @@ while True:
     print(f"Connexion établie avec le client {client_address}")
 
     while True:
-        fichier = HOST.replace('.','-')+'-'+str(PORT)+'.json'
+        fichier = HOST.replace('.', '-') + '-' + str(PORT) + '.json'
         print(fichier)
         stockage = lire_fichier_json(fichier)
         try:
@@ -43,10 +41,12 @@ while True:
 
             # Traitement de la requête en fonction de la valeur du champ "operation"
             operation = json_data.get("operation")
-            
+
             if operation == "GET":
                 key = json_data.get("rsrcId")
                 value = stockage.get(key)
+                print(value)
+                print(type(value))
                 if value is not None:
                     reponse = {
                         "server": HOST,
@@ -64,10 +64,11 @@ while True:
             elif operation == "POST":
                 data = json_data.get("data")
                 id = json_data.get("rsrcId")
-                if (is_valid_json(data) and (id !="")) :
+                if (is_valid_json(data) and (id != "")):
                     key = id
                     print(key)
                     value = data
+                    print("valeur ", value)
                     if key not in stockage:
                         stockage[key] = value
                         reponse = {
@@ -93,11 +94,13 @@ while True:
             else:
                 print("Opération non supportée:", operation)
 
-            ecraser_fichier_json(HOST.replace('.','-')+'-'+str(PORT)+'.json', stockage)
+            ecraser_fichier_json(HOST.replace('.', '-') + '-' + str(PORT) + '.json', stockage)
 
             # Envoyer la réponse au client
             json_data = json.dumps(reponse)
-            client_socket.sendall(json_data.encode())
+
+            donnees = json_data.replace("\\" , "")
+            client_socket.sendall(donnees.encode())
 
         except json.JSONDecodeError as e:
             print("Erreur lors du décodage du JSON:", e)
