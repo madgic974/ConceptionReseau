@@ -68,7 +68,10 @@ def handle_client(client_socket, client_address, lock):
                             }
                             json_data = json.dumps(reponse)
                             donnees = json_data.replace("\\", "")
-                            client_socket.sendall(donnees.encode())
+                            try:
+                                client_socket.sendall(donnees.encode())
+                            except Exception as e : 
+                                client_socket.close()
 
                             # Mettre à jour la valeur pour la prochaine comparaison
                             value = new_value
@@ -144,9 +147,12 @@ def handle_client(client_socket, client_address, lock):
             response = "Erreur lors du décodage du JSON."
             client_socket.sendall(response.encode())
             break
-
-    client_socket.close()
-    print(f"Connexion avec le client {client_address} fermée")
+    
+    try : 
+        client_socket.close()
+        print(f"Connexion avec le client {client_address} fermée")
+    except Exception as e :
+        print("erreur")
 
 HOST = sys.argv[1]
 PORT = int(sys.argv[2])

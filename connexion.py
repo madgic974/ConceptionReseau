@@ -31,7 +31,6 @@ def recevoir_reponse(s):
         print("Réponse du serveur : ", response.decode())
         return response.decode()
     except socket.error as e:
-        print(f"Échec lors de la réception de la réponse du serveur : {e}")
         return None
 
 def fermer_connexion(s):

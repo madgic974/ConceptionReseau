@@ -101,5 +101,6 @@ def ecritureIHM(requette_valide, donnee):
         reception = recevoir_reponse(socket)
         #Fermeture de la connexion 
         fermer_connexion(socket)
+        
     return reception
 
