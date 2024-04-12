@@ -117,7 +117,7 @@ def lecture(requette):
         
     except Exception as e:
         print("Une erreur est survenue:", e)
-        return None
+        return "Impossible d'établir la connexion avec le serveur"
 
 def ecriture(requette, donnee) :
 
