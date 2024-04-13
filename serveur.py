@@ -5,6 +5,26 @@ from gestionjson import *
 import os
 import threading
 import time
+from client import lecture
+import re
+
+def extract_strings_with_dollar(data):
+    
+    # Fonction récursive pour parcourir les données
+    def recurse_extract(obj):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                obj[key] = recurse_extract(value)
+        elif isinstance(obj, list):
+            for i in range(len(obj)):
+                obj[i] = recurse_extract(obj[i])
+        elif isinstance(obj, str):
+            matches = re.findall(r'\$(\w+://\S+)', obj)
+            for match in matches:
+                obj = obj.replace(f"${match}", lecture(match))
+        return obj
+
+    return recurse_extract(data)
 
 def is_valid_json(my_json):
     try:
@@ -109,6 +129,7 @@ def handle_client(client_socket, client_address, lock):
                     key = id
                     print(key)
                     value = data
+                    value = extract_strings_with_dollar(data)
                     print("valeur ", value)
                     with lock:
                         if key not in stockage:
