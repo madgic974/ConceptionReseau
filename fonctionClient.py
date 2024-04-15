@@ -32,12 +32,13 @@ def ecriture():
     #Récupération des champs de la requette 
     [protocol, ip_address, port, rsrc_id] = extraire_arguments_requete(requette_valide)
     #Demande un json valide
-    json = demander_json()
+    json = demander_json2()
     #Connexion au serveur
     socket = connecter_socket(ip_address, port)
     if socket : 
         #Création du json a envoyer pour l'écriture
         message = creer_json_ecriture(protocol,rsrc_id,json)
+        print (message)
         #Envoie du message 
         envoyer_message(socket, message)
         #Reception message

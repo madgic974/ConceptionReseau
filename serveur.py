@@ -56,6 +56,7 @@ def handle_client(client_socket, client_address, lock):
 
                     # Réponse initiale au client
                     if value is not None:
+                        value = extract_strings_with_dollar(data)
                         reponse = {
                             "server": HOST,
                             "code": "200",
@@ -101,6 +102,7 @@ def handle_client(client_socket, client_address, lock):
                     value = stockage.get(key)
 
                     if value is not None:
+                        value = extract_strings_with_dollar(value)
                         reponse = {
                             "server": HOST,
                             "code": "200",
@@ -125,11 +127,12 @@ def handle_client(client_socket, client_address, lock):
             elif operation == "POST":
                 data = json_data.get("data")
                 id = json_data.get("rsrcId")
-                if (is_valid_json(data) and (id != "")):
+                if (1):
+                #if (is_valid_json(data) and (id != "")):
                     key = id
                     print(key)
                     value = data
-                    value = extract_strings_with_dollar(data)
+                    #value = extract_strings_with_dollar(data)
                     print("valeur ", value)
                     with lock:
                         if key not in stockage:

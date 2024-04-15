@@ -62,6 +62,11 @@ def creer_json_lecture(protocol, rsrc_id):
     }
     return json.dumps(data)
 
+
+def demander_json2():
+    json_str = input("Veuillez saisir un JSON : ")
+    return json_str
+    
 def demander_json():
     while True:
         json_str = input("Veuillez saisir un JSON : ")
