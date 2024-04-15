@@ -25,7 +25,6 @@ def extract_strings_with_dollar(data):
                 obj = obj.replace(f"${match}", lecture(match))
         return obj
 
-    print(data)
     return recurse_extract(data)
 
 def is_valid_json(my_json):
@@ -55,15 +54,15 @@ def handle_client(client_socket, client_address, lock):
                 if protocol == "wrdo":
                     # Récupérer la valeur actuelle de la ressource
                     value = stockage.get(key)
-
+                    print("ressource: ",value)
                     # Réponse initiale au client
                     if value is not None:
-                        value = extract_strings_with_dollar(data)
+                        value2 = extract_strings_with_dollar(value)
                         reponse = {
                             "server": HOST,
                             "code": "200",
                             "rsrcId": key,
-                            "data": value
+                            "data": value2
                         }
                     else:
                         reponse = {

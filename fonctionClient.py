@@ -11,7 +11,6 @@ def lecture(requette_valide):
         requette_valide = demander_requete_format()
     #Récupération des champs de la requette 
 
-    print(requette_valide)
     [protocol, ip_address, port, rsrc_id] = extraire_arguments_requete(requette_valide)
     #Connexion au serveur 
     socket = connecter_socket(ip_address, port)
