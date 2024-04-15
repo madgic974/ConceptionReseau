@@ -3,10 +3,15 @@ from connexion import *
 import threading
 import time
 
-def lecture():
-    #Récupération d'une requette valide
-    requette_valide = demander_requete_format()
+def lecture(requette_valide):
+
+    reception = "Erreur"
+    if not requette_valide:
+        #Récupération d'une requette valide
+        requette_valide = demander_requete_format()
     #Récupération des champs de la requette 
+
+    print(requette_valide)
     [protocol, ip_address, port, rsrc_id] = extraire_arguments_requete(requette_valide)
     #Connexion au serveur 
     socket = connecter_socket(ip_address, port)
@@ -24,7 +29,9 @@ def lecture():
                 reception = recevoir_reponse(socket)
 
         #Fermeture de la connexion 
-        fermer_connexion(socket)  
+        fermer_connexion(socket) 
+
+    return reception
 
 def ecriture():
     #Récupération d'une requette valide

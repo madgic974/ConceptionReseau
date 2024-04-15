@@ -13,7 +13,7 @@ while(1):
     choix = ChoixAction()
 
     if (choix=='1') : 
-        lecture()
+        lecture("")
     elif (choix=='2') : 
         ecriture() 
     elif (choix=='3') : 

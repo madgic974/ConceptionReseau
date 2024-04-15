@@ -5,7 +5,7 @@ from gestionjson import *
 import os
 import threading
 import time
-from client import lecture
+from fonctionClient import lecture
 import re
 
 def extract_strings_with_dollar(data):
@@ -19,11 +19,13 @@ def extract_strings_with_dollar(data):
             for i in range(len(obj)):
                 obj[i] = recurse_extract(obj[i])
         elif isinstance(obj, str):
-            matches = re.findall(r'\$(\w+://\S+)', obj)
+            matches = re.findall(r'\$(\w+://\S[^\}]+)', obj)
             for match in matches:
+                print(match)
                 obj = obj.replace(f"${match}", lecture(match))
         return obj
 
+    print(data)
     return recurse_extract(data)
 
 def is_valid_json(my_json):
