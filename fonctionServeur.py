@@ -9,9 +9,11 @@ from fonctionClient import lecture
 import re
 
 def extract_strings_with_dollar(data):
+    matches = []  # Liste pour stocker les correspondances à remplacer
     
     # Fonction récursive pour parcourir les données
     def recurse_extract(obj):
+        nonlocal matches  # Déclaration pour accéder à la variable matches de l'enclosing scope
         if isinstance(obj, dict):
             for key, value in obj.items():
                 obj[key] = recurse_extract(value)
@@ -19,13 +21,26 @@ def extract_strings_with_dollar(data):
             for i in range(len(obj)):
                 obj[i] = recurse_extract(obj[i])
         elif isinstance(obj, str):
-            matches = re.findall(r'\$(\w+://\S[^\}]+)', obj)
-            for match in matches:
-                print(match)
-                obj = obj.replace(f"${match}", lecture(match))
+            new_matches = re.findall(r'\$(\w+://[^"]+)', obj)
+            matches.extend(new_matches)  # Ajouter les nouvelles correspondances à la liste
         return obj
+    
+    # Appeler la fonction récursive pour collecter les correspondances
+    recurse_extract(data)
 
-    return recurse_extract(data)
+    
+    # Remplacer toutes les correspondances dans les données
+    for match in matches:
+        try:
+            change = lecture(match)
+            print('--------------')
+            print(change)
+            print(match)
+            data = data.replace(f"${match}", change,1)
+            print('---------------')
+        except:
+            print("Impossible de récupérer les informations sur", match)
+    return data
 
 def is_valid_json(my_json):
     try:
@@ -81,13 +96,14 @@ def handle_client(client_socket, client_address, lock,stockage,HOST,PORT):
                         # Attente d'une éventuelle modification de la ressource
                         new_value = stockage.get(key)
                         if new_value != value:
+                            new_value2 = extract_strings_with_dollar(new_value)
                             print("ressource: ",new_value)
                             # Si la ressource a été modifiée, envoyer la nouvelle valeur au client
                             reponse = {
                                 "server": HOST,
                                 "code": "210",
                                 "rsrcId": key,
-                                "data": new_value
+                                "data": new_value2
                             }
                             json_data = json.dumps(reponse)
                             donnees = json_data.replace("\\", "")
