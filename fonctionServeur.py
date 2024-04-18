@@ -66,7 +66,8 @@ def handle_client(client_socket, client_address, lock,stockage,HOST,PORT):
                 key = json_data.get("rsrcId")
                 protocol = json_data.get("protocol")
 
-                if protocol == "wrdo":
+                if (protocol == "wrdo" or protocol == "rdo"):
+
                     # Récupérer la valeur actuelle de la ressource
                     value = stockage.get(key)
                     print("ressource: ",value)
@@ -86,54 +87,36 @@ def handle_client(client_socket, client_address, lock,stockage,HOST,PORT):
                             "message": f"La ressource avec l'identifiant '{key}' est inconnu."
                         }
 
-                    # Envoyer la réponse au client
-                    json_data = json.dumps(reponse)
-                    donnees = json_data.replace("\\", "")
-                    client_socket.sendall(donnees.encode())
 
-                    # Le client reste en attente de modification de la ressource
-                    while True:
-                        # Attente d'une éventuelle modification de la ressource
-                        new_value = stockage.get(key)
-                        if new_value != value:
-                            new_value2 = extract_strings_with_dollar(new_value)
-                            print("ressource: ",new_value)
-                            # Si la ressource a été modifiée, envoyer la nouvelle valeur au client
-                            reponse = {
-                                "server": HOST,
-                                "code": "210",
-                                "rsrcId": key,
-                                "data": new_value2
-                            }
-                            json_data = json.dumps(reponse)
-                            donnees = json_data.replace("\\", "")
-                            try:
-                                client_socket.sendall(donnees.encode())
-                            except Exception as e : 
-                                client_socket.close()
+                    if(protocol == "wrdo" and (value is not None) ):
+                        # Envoyer la réponse au client
+                        json_data = json.dumps(reponse)
+                        donnees = json_data.replace("\\", "")
+                        client_socket.sendall(donnees.encode())
+                        # Le client reste en attente de modification de la ressource
+                        while True:
+                            # Attente d'une éventuelle modification de la ressource
+                            new_value = stockage.get(key)
+                            if new_value != value:
+                                new_value2 = extract_strings_with_dollar(new_value)
+                                print("ressource: ",new_value)
+                                # Si la ressource a été modifiée, envoyer la nouvelle valeur au client
+                                reponse = {
+                                    "server": HOST,
+                                    "code": "210",
+                                    "rsrcId": key,
+                                    "data": new_value2
+                                }
+                                json_data = json.dumps(reponse)
+                                donnees = json_data.replace("\\", "")
+                                try:
+                                    client_socket.sendall(donnees.encode())
+                                except Exception as e : 
+                                    client_socket.close()
 
-                            # Mettre à jour la valeur pour la prochaine comparaison
-                            value = new_value
+                                # Mettre à jour la valeur pour la prochaine comparaison
+                                value = new_value
 
-                elif protocol == "rdo":
-                    # Logique actuelle pour récupérer la ressource
-                    value = stockage.get(key)
-                    print("ressource: ",value)
-
-                    if value is not None:
-                        value = extract_strings_with_dollar(value)
-                        reponse = {
-                            "server": HOST,
-                            "code": "200",
-                            "rsrcId": key,
-                            "data": value
-                        }
-                    else:
-                        reponse = {
-                            "server": HOST,
-                            "code": "404",
-                            "message": f"La ressource avec l'identifiant '{key}' est inconnue."
-                        }
                 else:
                     # Autre protocole non pris en charge
                     reponse = {
@@ -173,13 +156,13 @@ def handle_client(client_socket, client_address, lock,stockage,HOST,PORT):
                     reponse = {
                         "server": HOST,
                         "code": "400",
-                        "message": "Requête erronée : le corps de la requête est incorrect."
+                        "message": "Requete erronee : le corps de la requete est incorrect."
                     }
             else:
                 print("Opération non supportée:", operation)
 
             ecraser_fichier_json(HOST.replace('.', '-') + '-' + str(PORT) + '.json', stockage)
-            print(reponse)
+            print("reponse : ",reponse)
             json_data = json.dumps(reponse)
             donnees = json_data.replace("\\" , "")
             client_socket.sendall(donnees.encode())
@@ -190,6 +173,7 @@ def handle_client(client_socket, client_address, lock,stockage,HOST,PORT):
             client_socket.sendall(response.encode())
             break
     
+    print("test")
     try : 
         client_socket.close()
         print(f"Connexion avec le client {client_address} fermée")

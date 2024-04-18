@@ -4,7 +4,7 @@ import threading
 import time
 
 def lecture(requette_valide):
-
+    code_value = ""
     reception = "Erreur"
     if not requette_valide:
         #Récupération d'une requette valide
@@ -21,8 +21,13 @@ def lecture(requette_valide):
         envoyer_message(socket, message)
         #Reception message
         reception = recevoir_reponse(socket)
+        
+        code_match = re.search(r'"code"\s*:\s*"(\d+)"', reception)
 
-        if (protocol == "wrdo"):
+        if code_match:
+            code_value = code_match.group(1)
+
+        if (protocol == "wrdo" and code_value != "404"):
             while(1):
                 #Reception message 
                 reception = recevoir_reponse(socket)
@@ -91,7 +96,7 @@ def receive_continuously(socket, fonctionAffichage):
             break
 
 def ecritureIHM(requette_valide, donnee):
-
+    reception = "Problème de connexion"
     try :
         [protocol, ip_address, port, rsrc_id] = extraire_arguments_requete(requette_valide)
         # Connexion au serveur 

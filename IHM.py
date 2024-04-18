@@ -12,10 +12,15 @@ ip_address = ""
 port = ""
 protocol = ""
 
+#------------------Variable lecture-------------------------
+
+socket_wrdo = None
+
 #------------------Variable ecriture-------------------------
 
 count = 0
 liste_id = []
+
 # Liste pour stocker les champs de saisie JSON
 json_entries = []
 etat_wrdo = False
@@ -23,8 +28,6 @@ etat_wrdo = False
 #-----------------Variable console--------------------------
 
 etat_console = False
-
-socket_wrdo = None
 
 #--------------------------------------------------Fonctions------------------------------------------------------
 
@@ -418,7 +421,6 @@ console_button = ttk.Button(root, text="Afficher/Masquer Console", command=view_
 console_button.grid(row=3, column=0, pady=10)
 
 clear_console_button = ttk.Button(root, text="Effacer Console", command=clear_console)
-
 
 # Exécuter la boucle principale de l'application
 add_json_entry()
